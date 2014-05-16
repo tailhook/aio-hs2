@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='aio-hs2',
-      version='0.1',
+      version='0.1.1',
       description='Asyncio-based client for hiveserver2 (and sharkserver2)',
       author='Paul Colomiets',
       author_email='paul@colomiets.name',
@@ -11,12 +11,13 @@ setup(name='aio-hs2',
       packages=[
         'aiohs2',
         'aiohs2.lowlevel',
+        'aiohs2.lowlevel.TCLIService',
         'thrift',
         'thrift.protocol',
         'thrift.transport',
         'thrift.server',
         ],
-      requires=['puresasl'],
+      install_requires=['pure-sasl'],
       classifiers=[
         'Development Status :: 4 - Beta',
         'Programming Language :: Python :: 3',
