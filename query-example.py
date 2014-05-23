@@ -11,10 +11,12 @@ def main():
     ap.add_argument('query')
     options = ap.parse_args()
 
-    cli = yield from Client.connect(options.host, options.port)
-    with cli.cursor() as cur:
+    cli = Client(options.host, options.port)
+    with (yield from cli.cursor()) as cur:
         yield from cur.execute(options.query)
+        schema = yield from cur.getSchema()
         rows = yield from cur.fetch()
+        print("COLS", schema)
         print("ROWS", rows)
 
 

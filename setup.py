@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='aio-hs2',
-      version='0.1.1',
+      version='0.2',
       description='Asyncio-based client for hiveserver2 (and sharkserver2)',
       author='Paul Colomiets',
       author_email='paul@colomiets.name',

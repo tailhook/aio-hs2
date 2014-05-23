@@ -22,8 +22,16 @@ Basic Usage
 
 .. code-block:: python
 
-    cli = yield from Client.connect('localhost', 10000)
-    with cli.cursor() as cur:
+    cli = Client('localhost', 10000)
+    with (yield from cli.cursor()) as cur:
         yield from cur.execute("SELECT * FROM table LIMIT 10")
         rows = yield from cur.fetch()
         print("ROWS", rows)
+
+
+Upgrade Notes
+-------------
+
+In version 0.1 client was connected by ``Client.connect`` and cursor was
+created by a plain function (not coroutine). It's changed to support
+transparent reconnection.

@@ -10,24 +10,33 @@ from .cursor import Cursor
 
 class Client(object):
 
-    def __init__(self, service, session_info):
-        self._svc = service
-        self._hsession = session_info.sessionHandle
-
-    @classmethod
-    @asyncio.coroutine
-    def connect(Client, host, port, **auth):
+    def __init__(self, host, port, **auth):
+        self.host = host
+        self.port = port
         if not auth:
             auth = {
                 'mechanism': 'PLAIN',
                 'username': 'anonymous',
                 'password': 'anonymous',
                 }
+        self.auth = auth
+        self._svc = None
+
+    @asyncio.coroutine
+    def connect(self):
         trans = yield from TSaslAsyncioTransport.connect(
-            host, port, **auth)
+            self.host, self.port, **self.auth)
         svc = ThriftClient(trans, TBinaryProtocolAcceleratedFactory())
         info = yield from svc.OpenSession(TOpenSessionReq(client_protocol=0))
-        return Client(svc, info)
+        self._svc = svc
+        self._hsession = info.sessionHandle
 
+    @asyncio.coroutine
     def cursor(self):
+        if self._svc:
+            tsk = self._svc._task
+            if tsk.cancelled() or tsk.done():
+                self._svc = None
+        if not self._svc:
+            yield from self.connect()
         return Cursor(self._svc, self._hsession)
